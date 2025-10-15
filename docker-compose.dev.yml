@@ -1,0 +1,25 @@
+services:
+  app-dev:
+    # ใช้แค่ stage 'builder' เพื่อให้มี devDependencies ครบใน dev mode
+    build:
+      context: .
+      target: builder
+    container_name: next-app-dev-instance
+    ports:
+      - "4002:4002"
+    volumes:
+      # เชื่อมโค้ดแบบ Real-time (App Router ใช้โฟลเดอร์ ./src)
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - ./tsconfig.json:/app/tsconfig.json
+      # ไม่ map node_modules เพื่อใช้ของใน container
+      - /app/node_modules
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"
+      WATCHPACK_POLLING_INTERVAL: "1000"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
+    command: sh -c "npm run dev -- --hostname 0.0.0.0"
